@@ -41,6 +41,7 @@ optKey = {
 	"SMTP auth" : "smtpAuth.py",
 	"Webserver-alive" : "PYTHON FILE NAME",
 	"Webserver-check" : "PYTHON FILE NAME",
+	"Argument test" : "argv.py"
 }
 
 # Shows the array only
@@ -61,7 +62,7 @@ def banner():
 # Gives options
 def options():
 	counter = 0
-	print "Type quit to exit"
+	print "[Type quit to exit]"
 	for each in optKey:
 		print "%d) %s"%(counter, each)
 		counter += 1
@@ -75,21 +76,49 @@ def termination():
 def execute(indata):
 	os.system("python modules/%s"%(indata))
 
+def exeparam(indata, param):
+	os.system("python modules/%s %s"%(indata, param))
+
 # Menu
+# The option method puts integer next to assigned string
+# optKey only takes strings to find the file for it
+# optArr only take integers to find the definition for it
+
+# Print the banner before the menu
+banner()
+
+# output is what shows the status
+output = "Type options to get the commands"
+
 menu = True
 while menu == True:
-	os.system("clear")
-	banner()
-	options()
+	
+	print "[Console] %s" %output
 	chosen = raw_input("> ")
+
+	print
+	arrChosen = chosen.split(" ")
+	paramDelLast = chosen.split(" ")
+	paramDelLast.pop(0)
+	paramChosen = " ".join(map(str, paramDelLast))
+
 	try:
-		output = execute(optKey[optArr[int(chosen)]])
-	except (IndexError, ValueError):
-		print "Choose a number between %d and %d"%(0, len(optKey)-1)
-	if chosen == "quit":
-		termination()
-		menu = False
-	else:
-		continue
+		if len(arrChosen) == 1 and len(paramDelLast) == 0:
+			execute(optKey[optArr[int(chosen)]])
+		elif len(arrChosen) > 1 and len(paramDelLast) > 0:
+			exeparam(optKey[optArr[int(arrChosen[0])]], paramChosen)
+
+	except (IndexError):
+		output = "Choose a number between %d and %d" %(0, len(optKey)-1)
+
+	except (ValueError):
+		if chosen == "quit":
+			termination()
+			break
+		elif chosen == "banner":
+			banner()
+		elif chosen == "options":
+			os.system("reset")
+			options()
 
 #http://www.techknow.one/forum/index.php?topic=9396.0
